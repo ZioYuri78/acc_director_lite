@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+    "accd_core",
+    "accd_gui",
+    "accd_lite",
+]
