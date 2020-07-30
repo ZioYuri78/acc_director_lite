@@ -138,9 +138,9 @@ pub struct MainApp {
     #[nwg_partial(parent: tab_container)]
     track_panel: TrackPanel,
 
-    #[nwg_partial(parent: tab_container)]
+    /* #[nwg_partial(parent: tab_container)]
     #[nwg_events((broadcasting_event_notice, OnNotice):[MainApp::update_events_tab])]
-    broadcasting_events_panel: EventsPanel,
+    broadcasting_events_panel: EventsPanel, */
 
     config: RefCell<ACCDConfig>,
     accdp: Arc<Mutex<ACCDProtocol>>,
@@ -455,7 +455,7 @@ impl MainApp {
             handlers.remove(0);
             self.broadcasting_events_panel.events_grid.remove_child::<BroadcastEvtButton>(btn);
             thread::sleep(Duration::from_secs(1));
-            self.broadcasting_events_panel.events_grid.fit();
+            self.window.invalidate();
         }
 
         let event_data = self.broadcasting_events_panel.broadcasting_event_data.lock().unwrap().clone();
@@ -590,7 +590,7 @@ impl MainApp {
                     match broadcasting_event.event_type {
                         //==============================================================================
                         // Just for testing purpose, remove later
-                        /* BroadcastingCarEventType::LapCompleted => {
+                        BroadcastingCarEventType::LapCompleted => {
                             let data = BroadcastingEventData {
                                 event: broadcasting_event.clone(),
                                 replay_seconds_back: 10.0,
@@ -598,7 +598,7 @@ impl MainApp {
                             };
                             *broadcasting_event_data.lock().unwrap() = data;
                             broadcasting_event_notice.notice();
-                        } */
+                        } 
                         //==============================================================================
                         BroadcastingCarEventType::BestSessionLap => {                                                                         
                             // TODO: maybe search some String-to-Duration crate       
