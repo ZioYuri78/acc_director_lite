@@ -2,7 +2,7 @@
 
 ## Broadcast client for Assetto Corsa Competizione
 
-This is just a project a did to learn Rust, so don't blame me if you see bad code :D
+This is just a barely finished project i did to learn Rust, so don't blame me if you see bad code :D
 
 The application need to be launched AFTER you joined a single player or multiplayer game session.
 
