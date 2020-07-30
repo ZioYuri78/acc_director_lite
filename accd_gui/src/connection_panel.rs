@@ -19,7 +19,7 @@ pub struct ConnectionPanel {
     #[nwg_layout_item(layout: connection_grid, row: 0, col: 0)]
     pub reg_result_tb: nwg::TextBox,
 
-    #[nwg_control]    
+    #[nwg_control]
     #[nwg_events(OnNotice:[ConnectionPanel::update_registration_tab])]
     pub registration_notice: nwg::Notice,
 

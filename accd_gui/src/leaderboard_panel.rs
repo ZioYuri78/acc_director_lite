@@ -3,12 +3,12 @@ extern crate native_windows_gui as nwg;
 
 use nwd::NwgPartial;
 
-use std::sync::{Arc, Mutex};
 use std::cell::RefCell;
+use std::sync::{Arc, Mutex};
 
 use accd2::accd_car_info::ACCDCarInfo;
-use accd2::accd_realtime_car_update::ACCDRealtimeCarUpdate;
 use accd2::accd_driver_info::ACCDDriverInfo;
+use accd2::accd_realtime_car_update::ACCDRealtimeCarUpdate;
 
 use crate::custom_buttons::CarInfoButton;
 
@@ -32,7 +32,6 @@ pub struct LeaderboardPanel {
     pub car_list_buttons: RefCell<Vec<CarInfoButton>>,
     pub car_list_handlers: RefCell<Vec<nwg::EventHandler>>,
 }
-
 
 impl LeaderboardPanel {
     fn update_leaderboard_tab(&self) {

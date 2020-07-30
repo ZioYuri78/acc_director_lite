@@ -19,7 +19,7 @@ pub struct RealtimeUpdatePanel {
     #[nwg_layout_item(layout: update_grid, row: 0, col: 0)]
     pub realtime_tb: nwg::TextBox,
 
-    #[nwg_control]    
+    #[nwg_control]
     #[nwg_events(OnNotice:[RealtimeUpdatePanel::update_realtime_tab])]
     pub realtime_update_notice: nwg::Notice,
 
@@ -28,9 +28,8 @@ pub struct RealtimeUpdatePanel {
 
 impl RealtimeUpdatePanel {
     fn update_realtime_tab(&self) {
-        
         let realtime_data = self.realtime_update_data.lock().unwrap();
-        
+
         self.realtime_tb.clear();
         self.realtime_tb.set_text(&format!(
             "Ambient Temp: {}\r\n\
@@ -47,5 +46,4 @@ impl RealtimeUpdatePanel {
             realtime_data.active_camera
         ));
     }
-
 }

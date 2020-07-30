@@ -1,5 +1,5 @@
-use std::process;
 use accd_gui;
+use std::process;
 
 fn main() {
     if let Err(e) = accd_gui::run() {

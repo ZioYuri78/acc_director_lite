@@ -12,6 +12,7 @@ use nwg::NativeUi;
 use std::cell::RefCell;
 use std::cell::RefMut;
 use std::collections::HashMap;
+use std::error::Error;
 use std::net::UdpSocket;
 use std::rc::Rc;
 use std::sync::mpsc;
@@ -19,7 +20,6 @@ use std::sync::mpsc::{Receiver, Sender};
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
-use std::error::Error;
 
 use accd2::accd_broadcasting_event::{ACCDBroadcastingEvent, BroadcastingCarEventType};
 use accd2::accd_car_info::ACCDCarInfo;
@@ -61,7 +61,7 @@ mod realtime_update_panel;
 use crate::realtime_update_panel::RealtimeUpdatePanel;
 
 mod custom_buttons;
-use crate::custom_buttons::{CarInfoButton, BroadcastEvtButton};
+use crate::custom_buttons::{BroadcastEvtButton, CarInfoButton};
 
 enum AppTabs {
     ConnTab = 0,
@@ -98,8 +98,6 @@ impl Default for MyChannel {
     }
 }
 
-
-
 #[derive(Default, NwgUi)]
 pub struct MainApp {
     #[nwg_control(size: (800, 600), position: (300, 300), title: "ACC Director LITE", flags: "MAIN_WINDOW|VISIBLE")]
@@ -108,7 +106,7 @@ pub struct MainApp {
         OnWindowMinimize: [MainApp::resize_tab_container], OnWindowMaximize: [MainApp::resize_tab_container])]
     window: nwg::Window,
 
-    // Tabs 
+    // Tabs
     #[nwg_control(parent: window, size: (800, 600))]
     tab_container: nwg::TabsContainer,
 
@@ -138,9 +136,11 @@ pub struct MainApp {
     #[nwg_partial(parent: tab_container)]
     track_panel: TrackPanel,
 
-    /* #[nwg_partial(parent: tab_container)]
+    /* 
+    #[nwg_partial(parent: tab_container)]
     #[nwg_events((broadcasting_event_notice, OnNotice):[MainApp::update_events_tab])]
-    broadcasting_events_panel: EventsPanel, */
+    broadcasting_events_panel: EventsPanel, 
+    */
 
     config: RefCell<ACCDConfig>,
     accdp: Arc<Mutex<ACCDProtocol>>,
@@ -150,7 +150,12 @@ pub struct MainApp {
 impl MainApp {
     fn replay_10s(&self) {
         let accdp = self.accdp.lock().unwrap();
-        let realtime_update_data = self.realtime_update_panel.realtime_update_data.lock().unwrap().clone();
+        let realtime_update_data = self
+            .realtime_update_panel
+            .realtime_update_data
+            .lock()
+            .unwrap()
+            .clone();
 
         let start_time = realtime_update_data.session_time.as_millis() as f32;
         let duration = 10.0;
@@ -164,12 +169,17 @@ impl MainApp {
             car_index,
             camera_set,
             camera,
-        );        
+        );
     }
 
     fn replay_30s(&self) {
         let accdp = self.accdp.lock().unwrap();
-        let realtime_update_data = self.realtime_update_panel.realtime_update_data.lock().unwrap().clone();
+        let realtime_update_data = self
+            .realtime_update_panel
+            .realtime_update_data
+            .lock()
+            .unwrap()
+            .clone();
 
         let start_time = realtime_update_data.session_time.as_millis() as f32;
         let duration = 30.0;
@@ -213,6 +223,12 @@ impl MainApp {
                     nwg::unbind_event_handler(&car_list_h);
                 }
             }
+            AppTabs::EvtTab => {
+                /*  let broadcast_evt_handlers = self.events_panel.broadcast_evt_handlers.borrow();
+                for handler in broadcast_evt_handlers.iter() {
+                    nwg::unbind_event_handler(&handler);
+                } */
+            }
             _ => {}
         }
     }
@@ -237,6 +253,7 @@ impl MainApp {
             }
             AppTabs::EvtTab => {
                 //self.events_grid.fit();
+                //self.update_events_tab();
                 println!("Events Tab");
             }
             AppTabs::TrackTab => {
@@ -274,9 +291,14 @@ impl MainApp {
         for handler in car_list_handlers.iter() {
             nwg::unbind_event_handler(&handler);
         }
+
+        /*  let broadcast_evt_handlers = self.events_panel.broadcast_evt_handlers.borrow();
+        for handler in broadcast_evt_handlers.iter() {
+            nwg::unbind_event_handler(&handler);
+        } */
+
         nwg::stop_thread_dispatch();
     }
-
 
     fn update_camera_tab(&self) {
         let camera_sets = self.camera_panel.camera_data.lock().unwrap().clone();
@@ -324,7 +346,6 @@ impl MainApp {
     }
 
     fn update_huds_tab(&self) {
-        
         let huds = self.huds_panel.huds_data.lock().unwrap().clone();
         self.huds_panel.hud_buttons.borrow_mut().clear();
         self.huds_panel.hud_handlers.borrow_mut().clear();
@@ -366,14 +387,15 @@ impl MainApp {
         }
     }
 
-    
     fn init_leaderboard_tab(&self) {
         let entry_list_cars = self.leaderboard_panel.entry_list_cars_data.lock().unwrap();
         let mut row = 0;
         if entry_list_cars.len() > 0 {
-            
             self.leaderboard_panel.car_list_buttons.borrow_mut().clear();
-            self.leaderboard_panel.car_list_handlers.borrow_mut().clear();
+            self.leaderboard_panel
+                .car_list_handlers
+                .borrow_mut()
+                .clear();
 
             for c in entry_list_cars.clone() {
                 let accdp = self.accdp.clone();
@@ -401,11 +423,12 @@ impl MainApp {
                     &c.race_number, &c.team_name, &driver.first_name, &driver.last_name,
                 ));
 
-                
                 let mut buttons = self.leaderboard_panel.car_list_buttons.borrow_mut();
                 let mut handlers = self.leaderboard_panel.car_list_handlers.borrow_mut();
 
-                self.leaderboard_panel.leaderboard_grid.add_child(0, row, &new_button);
+                self.leaderboard_panel
+                    .leaderboard_grid
+                    .add_child(0, row, &new_button);
                 row = row + 1;
 
                 let new_button_handle = new_button.handle;
@@ -432,25 +455,11 @@ impl MainApp {
         }
     }
 
-
-    fn sort_leaderboard(&self) {
-        /*  let mut car_buttons = self.car_list_buttons.borrow_mut();
-        if car_buttons.len() > 0 {
-            car_buttons.sort_by(|a,b|a.rt_update.position.cmp(&b.rt_update.position));
-            /* while self.leaderboard_grid.
-
-            } */
-        }
-        unimplemented!("sort leaderboard"); */
-        println!("invalidate");
-        self.window.invalidate();
-    }
-
     /* fn update_events_tab(&self) {
         let mut buttons = self.broadcasting_events_panel.broadcast_evt_buttons.borrow_mut();
         let mut handlers = self.broadcasting_events_panel.broadcast_evt_handlers.borrow_mut();
 
-        if buttons.len() > 10 {            
+        if buttons.len() > 10 {
             let btn = buttons.remove(0);
             handlers.remove(0);
             self.broadcasting_events_panel.events_grid.remove_child::<BroadcastEvtButton>(btn);
@@ -460,14 +469,14 @@ impl MainApp {
 
         let event_data = self.broadcasting_events_panel.broadcasting_event_data.lock().unwrap().clone();
         let mut new_button = Default::default();
-        BroadcastEvtButton::builder().parent(&self.broadcasting_events_panel.events_tab).build(&mut new_button).expect("Failed to build BroadcastEvtButton");        
+        BroadcastEvtButton::builder().parent(&self.broadcasting_events_panel.events_tab).build(&mut new_button).expect("Failed to build BroadcastEvtButton");
         new_button.broadcast_evt = event_data.event.clone();
         new_button.set_text(&new_button.broadcast_evt.event_msg);
-        
+
 
         let row = buttons.len() as u32;
         self.broadcasting_events_panel.events_grid.add_child(0, row, &new_button);
-        
+
         let accdp = self.accdp.clone();
         let new_button_handle = new_button.handle;
         let handler = nwg::bind_event_handler(
@@ -494,7 +503,7 @@ impl MainApp {
         let c_trtx = self.txrx.clone();
         *self.accdp.lock().unwrap() =
             ACCDProtocol::new(parse_config_file("./config/default.cfg".to_string()));
-        let c_accdp = Arc::clone(&self.accdp);            
+        let c_accdp = Arc::clone(&self.accdp);
 
         let bind_addr = c_accdp.lock().unwrap().config.bind_addr;
         c_accdp.lock().unwrap().socket = Some(RefCell::new(UdpSocket::bind(bind_addr).unwrap()));
@@ -520,12 +529,11 @@ impl MainApp {
         let entry_list_cars_data = Arc::clone(&self.leaderboard_panel.entry_list_cars_data);
 
         let update_leaderboard_notice = self.leaderboard_panel.update_leaderboard_notice.sender();
-       
+
         let update_car_data = Arc::clone(&self.leaderboard_panel.update_car_data);
 
         /* let broadcasting_event_notice = self.broadcasting_events_panel.broadcasting_event_notice.sender();
-        let broadcasting_event_data = Arc::clone(&self.broadcasting_events_panel.broadcasting_event_data);  */       
-        
+        let broadcasting_event_data = Arc::clone(&self.broadcasting_events_panel.broadcasting_event_data);  */
 
         thread::spawn(move || loop {
             match c_trtx.lock().unwrap().1.try_recv() {
@@ -559,11 +567,11 @@ impl MainApp {
                     huds_notice.notice();
                 }
                 ListenResult::RealTimeUpdate(rtu) => {
-                    *realtime_update_data.lock().unwrap() = rtu.clone();                    
+                    *realtime_update_data.lock().unwrap() = rtu.clone();
                     realtime_notice.notice();
                 }
                 ListenResult::RealTimeCarUpdate(rt_car_update) => {
-                    thread::sleep(Duration::from_millis(1));                    
+                    thread::sleep(Duration::from_millis(1));
                     *update_car_data.lock().unwrap() = rt_car_update.clone();
                     update_leaderboard_notice.notice();
                 }
@@ -586,7 +594,7 @@ impl MainApp {
                     }
                 }
                 /* ListenResult::BroadcastingEvent(broadcasting_event) => {
-                    
+
                     match broadcasting_event.event_type {
                         //==============================================================================
                         // Just for testing purpose, remove later
@@ -598,17 +606,17 @@ impl MainApp {
                             };
                             *broadcasting_event_data.lock().unwrap() = data;
                             broadcasting_event_notice.notice();
-                        } 
+                        }
                         //==============================================================================
-                        BroadcastingCarEventType::BestSessionLap => {                                                                         
-                            // TODO: maybe search some String-to-Duration crate       
+                        BroadcastingCarEventType::BestSessionLap => {
+                            // TODO: maybe search some String-to-Duration crate
                             let data = BroadcastingEventData {
                                 event: broadcasting_event.clone(),
                                 replay_seconds_back: 10.0,
                                 replay_duration: 10.0,
                             };
                             *broadcasting_event_data.lock().unwrap() = data;
-                            broadcasting_event_notice.notice();                    
+                            broadcasting_event_notice.notice();
                         }
                         BroadcastingCarEventType::Accident => {
                             let data = BroadcastingEventData {
@@ -617,7 +625,7 @@ impl MainApp {
                                 replay_duration: 10.0,
                             };
                             *broadcasting_event_data.lock().unwrap() = data;
-                            broadcasting_event_notice.notice();   
+                            broadcasting_event_notice.notice();
                         }
                         BroadcastingCarEventType::PenaltyCommMsg => {
                             let data = BroadcastingEventData {

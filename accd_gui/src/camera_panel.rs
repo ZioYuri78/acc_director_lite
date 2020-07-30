@@ -3,9 +3,9 @@ extern crate native_windows_gui as nwg;
 
 use nwd::NwgPartial;
 
-use std::sync::{Arc, Mutex};
-use std::collections::HashMap;
 use std::cell::RefCell;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 #[derive(Default, NwgPartial)]
 pub struct CameraPanel {

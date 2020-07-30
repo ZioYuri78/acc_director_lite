@@ -32,6 +32,6 @@ impl TrackPanel {
         self.track_info_tb.set_text(&format!(
             "{}\r\n({}m)",
             track_data.track_name, track_data.track_meters
-        )); 
+        ));
     }
 }

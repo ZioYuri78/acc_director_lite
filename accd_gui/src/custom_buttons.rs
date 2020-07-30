@@ -1,10 +1,9 @@
-
 use nwd::NwgUi;
 use nwg::NativeUi;
 
+use accd2::accd_broadcasting_event::{ACCDBroadcastingEvent, BroadcastingCarEventType};
 use accd2::accd_car_info::ACCDCarInfo;
 use accd2::accd_realtime_car_update::ACCDRealtimeCarUpdate;
-use accd2::accd_broadcasting_event::{ACCDBroadcastingEvent, BroadcastingCarEventType};
 
 #[derive(Default)]
 pub struct CarInfoButton {
@@ -51,12 +50,10 @@ impl<'a> CarInfoButtonBuilder<'a> {
     }
 }
 
-
-
 #[derive(Default)]
 pub struct BroadcastEvtButton {
     pub base: nwg::Button,
-    pub broadcast_evt: ACCDBroadcastingEvent,    
+    pub broadcast_evt: ACCDBroadcastingEvent,
 }
 
 nwg::subclass_control!(BroadcastEvtButton, Button, base);
@@ -66,7 +63,6 @@ impl BroadcastEvtButton {
         BroadcastEvtButtonBuilder {
             button_builder: nwg::Button::builder().text("BroadcastEvtButton with builder"),
             broadcast_evt: ACCDBroadcastingEvent::default(),
-           
         }
     }
 }
@@ -79,12 +75,12 @@ impl Into<nwg::ControlHandle> for BroadcastEvtButton {
 
 pub struct BroadcastEvtButtonBuilder<'a> {
     button_builder: nwg::ButtonBuilder<'a>,
-    broadcast_evt: ACCDBroadcastingEvent,    
+    broadcast_evt: ACCDBroadcastingEvent,
 }
 
 impl<'a> BroadcastEvtButtonBuilder<'a> {
     pub fn data(mut self, ci: ACCDBroadcastingEvent) -> BroadcastEvtButtonBuilder<'a> {
-        self.broadcast_evt = ci;        
+        self.broadcast_evt = ci;
         self
     }
 
@@ -95,7 +91,7 @@ impl<'a> BroadcastEvtButtonBuilder<'a> {
 
     pub fn build(self, btn: &mut BroadcastEvtButton) -> Result<(), nwg::NwgError> {
         self.button_builder.build(&mut btn.base)?;
-        btn.broadcast_evt = self.broadcast_evt;        
+        btn.broadcast_evt = self.broadcast_evt;
         Ok(())
     }
 }

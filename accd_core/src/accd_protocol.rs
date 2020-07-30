@@ -99,7 +99,6 @@ pub struct ACCDProtocol {
     last_entry_list_request: Instant,
 }
 
-
 impl Default for ACCDProtocol {
     fn default() -> Self {
         ACCDProtocol {
