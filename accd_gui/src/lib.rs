@@ -446,7 +446,7 @@ impl MainApp {
         self.window.invalidate();
     }
 
-    fn update_events_tab(&self) {
+    /* fn update_events_tab(&self) {
         let mut buttons = self.broadcasting_events_panel.broadcast_evt_buttons.borrow_mut();
         let mut handlers = self.broadcasting_events_panel.broadcast_evt_handlers.borrow_mut();
 
@@ -488,7 +488,7 @@ impl MainApp {
 
         buttons.push(new_button);
         handlers.push(handler);
-    }
+    } */
 
     fn init(&self) {
         let c_trtx = self.txrx.clone();
@@ -523,8 +523,8 @@ impl MainApp {
        
         let update_car_data = Arc::clone(&self.leaderboard_panel.update_car_data);
 
-        let broadcasting_event_notice = self.broadcasting_events_panel.broadcasting_event_notice.sender();
-        let broadcasting_event_data = Arc::clone(&self.broadcasting_events_panel.broadcasting_event_data);        
+        /* let broadcasting_event_notice = self.broadcasting_events_panel.broadcasting_event_notice.sender();
+        let broadcasting_event_data = Arc::clone(&self.broadcasting_events_panel.broadcasting_event_data);  */       
         
 
         thread::spawn(move || loop {
@@ -585,7 +585,7 @@ impl MainApp {
                         None => {}
                     }
                 }
-                ListenResult::BroadcastingEvent(broadcasting_event) => {
+                /* ListenResult::BroadcastingEvent(broadcasting_event) => {
                     
                     match broadcasting_event.event_type {
                         //==============================================================================
@@ -630,7 +630,7 @@ impl MainApp {
                         }
                         _ => {}
                     }
-                }
+                } */
                 _ => {}
             }
         });
