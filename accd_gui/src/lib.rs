@@ -590,7 +590,7 @@ impl MainApp {
                     match broadcasting_event.event_type {
                         //==============================================================================
                         // Just for testing purpose, remove later
-                        BroadcastingCarEventType::LapCompleted => {
+                        /* BroadcastingCarEventType::LapCompleted => {
                             let data = BroadcastingEventData {
                                 event: broadcasting_event.clone(),
                                 replay_seconds_back: 10.0,
@@ -598,7 +598,7 @@ impl MainApp {
                             };
                             *broadcasting_event_data.lock().unwrap() = data;
                             broadcasting_event_notice.notice();
-                        }
+                        } */
                         //==============================================================================
                         BroadcastingCarEventType::BestSessionLap => {                                                                         
                             // TODO: maybe search some String-to-Duration crate       
