@@ -493,7 +493,7 @@ impl MainApp {
     fn init(&self) {
         let c_trtx = self.txrx.clone();
         *self.accdp.lock().unwrap() =
-            ACCDProtocol::new(parse_config_file("./config/ZioYuri78.cfg".to_string()));
+            ACCDProtocol::new(parse_config_file("./config/default.cfg".to_string()));
         let c_accdp = Arc::clone(&self.accdp);            
 
         let bind_addr = c_accdp.lock().unwrap().config.bind_addr;
