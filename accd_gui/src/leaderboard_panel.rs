@@ -17,7 +17,7 @@ pub struct LeaderboardPanel {
     #[nwg_control(text: "Leaderboard")]
     pub leaderboard_tab: nwg::Tab,
 
-    #[nwg_layout(parent: leaderboard_tab, spacing: 1)]
+    #[nwg_layout(parent: leaderboard_tab, spacing: 1, max_row: Some(30))]
     pub leaderboard_grid: nwg::GridLayout,
 
     #[nwg_control]
@@ -44,8 +44,9 @@ impl LeaderboardPanel {
         {
             Some(btn) => {
                 if btn.rt_update.position != -1 && btn.rt_update.position != car_update.position {
-                    //drop(car_buttons);
-                    //self.init_leaderboard_tab();
+                    self.leaderboard_grid.move_child(&btn.handle, 0, (btn.rt_update.position -1) as u32);
+                    self.leaderboard_grid.move_child_by_pos::<CarInfoButton>(0, (btn.rt_update.position -1) as u32, 0, (car_update.position -1) as u32);
+                    self.leaderboard_grid.fit();
                     return;
                 }
 

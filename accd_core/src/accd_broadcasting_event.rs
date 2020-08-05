@@ -7,7 +7,7 @@ use crate::accd_car_info::ACCDCarInfo;
 use crate::accd_protocol::ACCDProtocol;
 use crate::accd_utils::read_string;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum BroadcastingCarEventType {
     None = 0,
     GreenFlag = 1,
@@ -36,7 +36,7 @@ impl From<u8> for BroadcastingCarEventType {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ACCDBroadcastingEvent {
     pub event_type: BroadcastingCarEventType,
     pub event_msg: String,

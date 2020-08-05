@@ -100,14 +100,14 @@ impl Default for MyChannel {
 
 #[derive(Default, NwgUi)]
 pub struct MainApp {
-    #[nwg_control(size: (800, 600), position: (300, 300), title: "ACC Director LITE", flags: "MAIN_WINDOW|VISIBLE")]
+    #[nwg_control(size: (1024, 768), position: (150, 150), title: "ACC Director LITE", flags: "MAIN_WINDOW|VISIBLE")]
     #[nwg_events(OnWindowClose: [MainApp::on_close], OnInit: [MainApp::init],
         OnResizeBegin: [MainApp::on_resize_begin], OnResizeEnd: [MainApp::on_resize_end], OnResize: [MainApp::resize_tab_container], 
         OnWindowMinimize: [MainApp::resize_tab_container], OnWindowMaximize: [MainApp::resize_tab_container])]
     window: nwg::Window,
 
     // Tabs
-    #[nwg_control(parent: window, size: (800, 600))]
+    #[nwg_control(parent: window, size: (1024, 768))]
     tab_container: nwg::TabsContainer,
 
     // Panels
@@ -135,13 +135,11 @@ pub struct MainApp {
 
     #[nwg_partial(parent: tab_container)]
     track_panel: TrackPanel,
-
-    /* 
+    
     #[nwg_partial(parent: tab_container)]
     #[nwg_events((broadcasting_event_notice, OnNotice):[MainApp::update_events_tab])]
     broadcasting_events_panel: EventsPanel, 
-    */
-
+    
     config: RefCell<ACCDConfig>,
     accdp: Arc<Mutex<ACCDProtocol>>,
     txrx: Arc<Mutex<MyChannel>>,
@@ -224,10 +222,10 @@ impl MainApp {
                 }
             }
             AppTabs::EvtTab => {
-                /*  let broadcast_evt_handlers = self.events_panel.broadcast_evt_handlers.borrow();
+                let broadcast_evt_handlers = self.broadcasting_events_panel.broadcast_evt_handlers.borrow();
                 for handler in broadcast_evt_handlers.iter() {
                     nwg::unbind_event_handler(&handler);
-                } */
+                } 
             }
             _ => {}
         }
@@ -292,10 +290,10 @@ impl MainApp {
             nwg::unbind_event_handler(&handler);
         }
 
-        /*  let broadcast_evt_handlers = self.events_panel.broadcast_evt_handlers.borrow();
+        let broadcast_evt_handlers = self.broadcasting_events_panel.broadcast_evt_handlers.borrow();
         for handler in broadcast_evt_handlers.iter() {
             nwg::unbind_event_handler(&handler);
-        } */
+        }
 
         nwg::stop_thread_dispatch();
     }
@@ -455,16 +453,19 @@ impl MainApp {
         }
     }
 
-    /* fn update_events_tab(&self) {
+    fn update_events_tab(&self) {
         let mut buttons = self.broadcasting_events_panel.broadcast_evt_buttons.borrow_mut();
         let mut handlers = self.broadcasting_events_panel.broadcast_evt_handlers.borrow_mut();
 
-        if buttons.len() > 10 {
+        if buttons.len() > 9 {
             let btn = buttons.remove(0);
             handlers.remove(0);
             self.broadcasting_events_panel.events_grid.remove_child::<BroadcastEvtButton>(btn);
-            thread::sleep(Duration::from_secs(1));
-            self.window.invalidate();
+            
+            for i in 0..buttons.len() {
+                self.broadcasting_events_panel.events_grid.move_child(&buttons.get(i).unwrap().handle, 0, i as u32);                
+            };
+            
         }
 
         let event_data = self.broadcasting_events_panel.broadcasting_event_data.lock().unwrap().clone();
@@ -472,13 +473,13 @@ impl MainApp {
         BroadcastEvtButton::builder().parent(&self.broadcasting_events_panel.events_tab).build(&mut new_button).expect("Failed to build BroadcastEvtButton");
         new_button.broadcast_evt = event_data.event.clone();
         new_button.set_text(&new_button.broadcast_evt.event_msg);
-
-
+        
         let row = buttons.len() as u32;
         self.broadcasting_events_panel.events_grid.add_child(0, row, &new_button);
 
         let accdp = self.accdp.clone();
         let new_button_handle = new_button.handle;
+        
         let handler = nwg::bind_event_handler(
             &new_button_handle,
             &self.broadcasting_events_panel.events_tab.handle,
@@ -488,7 +489,7 @@ impl MainApp {
                         let start_time = (event_data.event.event_time_ms as f32) - event_data.replay_seconds_back;
                         let duration= event_data.replay_duration;
                         let car_index= event_data.event.event_car_id;
-                        accdp.lock().unwrap().request_instant_replay(start_time, duration, car_index, "".to_string(), "".to_string());
+                        accdp.lock().unwrap().request_instant_replay(start_time, duration, car_index, "".to_string(), "".to_string());                                                                           
                     }
                 },
                 _ => {}
@@ -497,7 +498,8 @@ impl MainApp {
 
         buttons.push(new_button);
         handlers.push(handler);
-    } */
+    }
+
 
     fn init(&self) {
         let c_trtx = self.txrx.clone();
@@ -532,8 +534,8 @@ impl MainApp {
 
         let update_car_data = Arc::clone(&self.leaderboard_panel.update_car_data);
 
-        /* let broadcasting_event_notice = self.broadcasting_events_panel.broadcasting_event_notice.sender();
-        let broadcasting_event_data = Arc::clone(&self.broadcasting_events_panel.broadcasting_event_data);  */
+        let broadcasting_event_notice = self.broadcasting_events_panel.broadcasting_event_notice.sender();
+        let broadcasting_event_data = Arc::clone(&self.broadcasting_events_panel.broadcasting_event_data);
 
         thread::spawn(move || loop {
             match c_trtx.lock().unwrap().1.try_recv() {
@@ -593,7 +595,7 @@ impl MainApp {
                         None => {}
                     }
                 }
-                /* ListenResult::BroadcastingEvent(broadcasting_event) => {
+                ListenResult::BroadcastingEvent(broadcasting_event) => {
 
                     match broadcasting_event.event_type {
                         //==============================================================================
@@ -638,7 +640,7 @@ impl MainApp {
                         }
                         _ => {}
                     }
-                } */
+                }
                 _ => {}
             }
         });

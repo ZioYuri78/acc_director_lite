@@ -14,7 +14,7 @@ pub struct EventsPanel {
     #[nwg_control(text: "Events")]
     pub events_tab: nwg::Tab,
 
-    #[nwg_layout(parent: events_tab, spacing: 1)]
+    #[nwg_layout(parent: events_tab, spacing: 1, max_row: Some(10))]
     pub events_grid: nwg::GridLayout,
 
     #[nwg_control]

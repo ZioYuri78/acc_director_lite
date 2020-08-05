@@ -53,10 +53,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
+name = "libm"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7fc7aa29613bd6a620df431842069224d8bc9011086b1db4c0e0cd47fa03ec9a"
+
+[[package]]
 name = "native-windows-derive"
 version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d899ca7fe286cb591e0cf3b09cad4a9760f1e4841de6e918949bbeff2d5e2ac6"
+source = "git+https://github.com/gabdube/native-windows-gui#689e98bde89d810cdca57d2250fade917a801509"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -66,11 +71,11 @@ dependencies = [
 [[package]]
 name = "native-windows-gui"
 version = "1.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98a3a93435ed2e3a8afcec8030f93467042ae59bf15c5d1ffbd95b9008b61cbb"
+source = "git+https://github.com/gabdube/native-windows-gui#689e98bde89d810cdca57d2250fade917a801509"
 dependencies = [
  "bitflags",
  "lazy_static",
+ "stretch",
  "winapi",
  "winapi-build",
 ]
@@ -100,10 +105,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5317f7588f0a5078ee60ef675ef96735a1442132dc645eb1d12c018620ed8cd3"
 
 [[package]]
-name = "syn"
-version = "1.0.36"
+name = "stretch"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4cdb98bcb1f9d81d07b536179c269ea15999b5d14ea958196413869445bb5250"
+checksum = "7b0dc6d20ce137f302edf90f9cd3d278866fd7fb139efca6f246161222ad6d87"
+dependencies = [
+ "lazy_static",
+ "libm",
+]
+
+[[package]]
+name = "syn"
+version = "1.0.37"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "239f255b9e3429350f188c27b807fc9920a15eb9145230ff1a7d054c08fec319"
 dependencies = [
  "proc-macro2",
  "quote",

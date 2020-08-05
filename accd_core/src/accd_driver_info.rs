@@ -6,7 +6,7 @@ use crate::accd_utils::read_string;
 
 use byteorder::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum DriverCategory {
     Platinum = 3,
     Gold = 2,
@@ -27,7 +27,7 @@ impl From<u8> for DriverCategory {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ACCDDriverInfo {
     pub first_name: String,
     pub last_name: String,

@@ -24,6 +24,13 @@ impl CarInfoButton {
     }
 }
 
+impl Into<nwg::ControlHandle> for CarInfoButton {
+    fn into(self) -> nwg::ControlHandle {
+        self.base.handle
+    }
+}
+
+
 pub struct CarInfoButtonBuilder<'a> {
     button_builder: nwg::ButtonBuilder<'a>,
     car_info: ACCDCarInfo,
@@ -50,7 +57,7 @@ impl<'a> CarInfoButtonBuilder<'a> {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, PartialEq)]
 pub struct BroadcastEvtButton {
     pub base: nwg::Button,
     pub broadcast_evt: ACCDBroadcastingEvent,

@@ -3,7 +3,7 @@ use std::fmt;
 use crate::accd_driver_info::ACCDDriverInfo;
 use crate::accd_enums::NationalityEnum;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ACCDCarInfo {
     pub car_index: u16,
     pub car_model_type: u8,
