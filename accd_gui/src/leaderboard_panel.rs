@@ -44,8 +44,9 @@ impl LeaderboardPanel {
         {
             Some(btn) => {
                 if btn.rt_update.position != -1 && btn.rt_update.position != car_update.position {
-                    self.leaderboard_grid.move_child(&btn.handle, 0, (btn.rt_update.position -1) as u32);
-                    self.leaderboard_grid.move_child_by_pos::<CarInfoButton>(0, (btn.rt_update.position -1) as u32, 0, (car_update.position -1) as u32);
+                    self.leaderboard_grid.move_child_by_pos::<CarInfoButton>(0, (car_update.position - 1) as u32, 0, (btn.rt_update.position - 1) as u32);
+                    self.leaderboard_grid.move_child(&btn.handle, 0, (car_update.position - 1) as u32);                    
+                    btn.rt_update = car_update.clone();
                     self.leaderboard_grid.fit();
                     return;
                 }
