@@ -135,11 +135,11 @@ pub struct MainApp {
 
     #[nwg_partial(parent: tab_container)]
     track_panel: TrackPanel,
-    
+
     #[nwg_partial(parent: tab_container)]
     #[nwg_events((broadcasting_event_notice, OnNotice):[MainApp::update_events_tab])]
-    broadcasting_events_panel: EventsPanel, 
-    
+    broadcasting_events_panel: EventsPanel,
+
     config: RefCell<ACCDConfig>,
     accdp: Arc<Mutex<ACCDProtocol>>,
     txrx: Arc<Mutex<MyChannel>>,
@@ -222,10 +222,13 @@ impl MainApp {
                 }
             }
             AppTabs::EvtTab => {
-                let broadcast_evt_handlers = self.broadcasting_events_panel.broadcast_evt_handlers.borrow();
+                let broadcast_evt_handlers = self
+                    .broadcasting_events_panel
+                    .broadcast_evt_handlers
+                    .borrow();
                 for handler in broadcast_evt_handlers.iter() {
                     nwg::unbind_event_handler(&handler);
-                } 
+                }
             }
             _ => {}
         }
@@ -290,7 +293,10 @@ impl MainApp {
             nwg::unbind_event_handler(&handler);
         }
 
-        let broadcast_evt_handlers = self.broadcasting_events_panel.broadcast_evt_handlers.borrow();
+        let broadcast_evt_handlers = self
+            .broadcasting_events_panel
+            .broadcast_evt_handlers
+            .borrow();
         for handler in broadcast_evt_handlers.iter() {
             nwg::unbind_event_handler(&handler);
         }
@@ -396,8 +402,25 @@ impl MainApp {
                 .clear();
 
             for c in entry_list_cars.clone() {
+
+                let mut labels = self.leaderboard_panel.position_labels.borrow_mut();
+
+                let mut position_label: nwg::Label = Default::default();
+                nwg::Label::builder()
+                    .text(&format!("P{}", row + 1))
+                    .parent(&self.leaderboard_panel.leaderboard_tab)
+                    .build(&mut position_label)
+                    .expect("Failed to build label");
+                let position_label_item = nwg::GridLayoutItem::new(&position_label, 0, row, 1, 1);
+                self.leaderboard_panel
+                    .leaderboard_grid
+                    .add_child_item(position_label_item);
+
+
+                labels.push(position_label);
+
                 let accdp = self.accdp.clone();
-                let mut new_button = Default::default();
+                
 
                 let driver;
                 if c.drivers.len() > 0 {
@@ -410,6 +433,7 @@ impl MainApp {
                     driver = ACCDDriverInfo::default();
                 }
 
+                let mut new_button = Default::default();
                 CarInfoButton::builder()
                     .parent(&self.leaderboard_panel.leaderboard_tab)
                     .build(&mut new_button)
@@ -424,9 +448,10 @@ impl MainApp {
                 let mut buttons = self.leaderboard_panel.car_list_buttons.borrow_mut();
                 let mut handlers = self.leaderboard_panel.car_list_handlers.borrow_mut();
 
+                let new_button_item = nwg::GridLayoutItem::new(&new_button, 1, row, 3, 1);
                 self.leaderboard_panel
                     .leaderboard_grid
-                    .add_child(0, row, &new_button);
+                    .add_child_item(new_button_item);
                 row = row + 1;
 
                 let new_button_handle = new_button.handle;
@@ -454,57 +479,85 @@ impl MainApp {
     }
 
     fn update_events_tab(&self) {
-        let mut buttons = self.broadcasting_events_panel.broadcast_evt_buttons.borrow_mut();
-        let mut handlers = self.broadcasting_events_panel.broadcast_evt_handlers.borrow_mut();
+        let mut buttons = self
+            .broadcasting_events_panel
+            .broadcast_evt_buttons
+            .borrow_mut();
+        let mut handlers = self
+            .broadcasting_events_panel
+            .broadcast_evt_handlers
+            .borrow_mut();
 
         if buttons.len() > 9 {
             let btn = buttons.remove(0);
             handlers.remove(0);
-            self.broadcasting_events_panel.events_grid.remove_child::<BroadcastEvtButton>(btn);
-            
+            self.broadcasting_events_panel
+                .events_grid
+                .remove_child::<BroadcastEvtButton>(btn);
+
             for i in 0..buttons.len() {
-                self.broadcasting_events_panel.events_grid.move_child(&buttons.get(i).unwrap().handle, 0, i as u32);                
-            };
-            
+                self.broadcasting_events_panel.events_grid.move_child(
+                    &buttons.get(i).unwrap().handle,
+                    0,
+                    i as u32,
+                );
+            }
         }
 
-        let event_data = self.broadcasting_events_panel.broadcasting_event_data.lock().unwrap().clone();
+        let event_data = self
+            .broadcasting_events_panel
+            .broadcasting_event_data
+            .lock()
+            .unwrap()
+            .clone();
         let mut new_button = Default::default();
-        BroadcastEvtButton::builder().parent(&self.broadcasting_events_panel.events_tab).build(&mut new_button).expect("Failed to build BroadcastEvtButton");
+        BroadcastEvtButton::builder()
+            .parent(&self.broadcasting_events_panel.events_tab)
+            .build(&mut new_button)
+            .expect("Failed to build BroadcastEvtButton");
         new_button.broadcast_evt = event_data.event.clone();
         new_button.set_text(&new_button.broadcast_evt.event_msg);
-        
+
         let row = buttons.len() as u32;
-        self.broadcasting_events_panel.events_grid.add_child(0, row, &new_button);
+        self.broadcasting_events_panel
+            .events_grid
+            .add_child(0, row, &new_button);
 
         let accdp = self.accdp.clone();
         let new_button_handle = new_button.handle;
-        
+
         let handler = nwg::bind_event_handler(
             &new_button_handle,
             &self.broadcasting_events_panel.events_tab.handle,
             move |evt, _evt_data, handle| match evt {
                 nwg::Event::OnButtonClick => {
                     if handle == new_button_handle {
-                        let start_time = (event_data.event.event_time_ms as f32) - event_data.replay_seconds_back;
-                        let duration= event_data.replay_duration;
-                        let car_index= event_data.event.event_car_id;
-                        accdp.lock().unwrap().request_instant_replay(start_time, duration, car_index, "".to_string(), "".to_string());                                                                           
+                        let start_time = (event_data.event.event_time_ms as f32)
+                            - event_data.replay_seconds_back;
+                        let duration = event_data.replay_duration;
+                        let car_index = event_data.event.event_car_id;
+                        accdp.lock().unwrap().request_instant_replay(
+                            start_time,
+                            duration,
+                            car_index,
+                            "".to_string(),
+                            "".to_string(),
+                        );
                     }
-                },
+                }
                 _ => {}
-            }
+            },
         );
 
         buttons.push(new_button);
         handlers.push(handler);
     }
 
-
     fn init(&self) {
         let c_trtx = self.txrx.clone();
-        *self.accdp.lock().unwrap() =
-            ACCDProtocol::new(parse_config_file("./accd_core/config/default.cfg".to_string()));
+        *self.accdp.lock().unwrap() = ACCDProtocol::new(parse_config_file(
+            "./accd_core/config/default.cfg".to_string(),
+        ));
         let c_accdp = Arc::clone(&self.accdp);
 
         let bind_addr = c_accdp.lock().unwrap().config.bind_addr;
@@ -534,8 +587,12 @@ impl MainApp {
 
         let update_car_data = Arc::clone(&self.leaderboard_panel.update_car_data);
 
-        let broadcasting_event_notice = self.broadcasting_events_panel.broadcasting_event_notice.sender();
-        let broadcasting_event_data = Arc::clone(&self.broadcasting_events_panel.broadcasting_event_data);
+        let broadcasting_event_notice = self
+            .broadcasting_events_panel
+            .broadcasting_event_notice
+            .sender();
+        let broadcasting_event_data =
+            Arc::clone(&self.broadcasting_events_panel.broadcasting_event_data);
 
         thread::spawn(move || loop {
             match c_trtx.lock().unwrap().1.try_recv() {
@@ -596,7 +653,6 @@ impl MainApp {
                     }
                 }
                 ListenResult::BroadcastingEvent(broadcasting_event) => {
-
                     match broadcasting_event.event_type {
                         //==============================================================================
                         // Just for testing purpose, remove later

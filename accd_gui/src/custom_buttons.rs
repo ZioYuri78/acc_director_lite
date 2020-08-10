@@ -30,7 +30,6 @@ impl Into<nwg::ControlHandle> for CarInfoButton {
     }
 }
 
-
 pub struct CarInfoButtonBuilder<'a> {
     button_builder: nwg::ButtonBuilder<'a>,
     car_info: ACCDCarInfo,

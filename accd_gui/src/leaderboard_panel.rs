@@ -31,6 +31,7 @@ pub struct LeaderboardPanel {
     pub entry_list_cars_data: Arc<Mutex<Vec<ACCDCarInfo>>>,
     pub car_list_buttons: RefCell<Vec<CarInfoButton>>,
     pub car_list_handlers: RefCell<Vec<nwg::EventHandler>>,
+    pub position_labels: RefCell<Vec<nwg::Label>>,
 }
 
 impl LeaderboardPanel {
@@ -44,8 +45,17 @@ impl LeaderboardPanel {
         {
             Some(btn) => {
                 if btn.rt_update.position != -1 && btn.rt_update.position != car_update.position {
-                    self.leaderboard_grid.move_child_by_pos::<CarInfoButton>(0, (car_update.position - 1) as u32, 0, (btn.rt_update.position - 1) as u32);
-                    self.leaderboard_grid.move_child(&btn.handle, 0, (car_update.position - 1) as u32);                    
+                    self.leaderboard_grid.move_child_by_pos::<CarInfoButton>(
+                        0,
+                        (car_update.position - 1) as u32,
+                        0,
+                        (btn.rt_update.position - 1) as u32,
+                    );
+                    self.leaderboard_grid.move_child(
+                        &btn.handle,
+                        0,
+                        (car_update.position - 1) as u32,
+                    );
                     btn.rt_update = car_update.clone();
                     self.leaderboard_grid.fit();
                     return;
@@ -67,9 +77,7 @@ impl LeaderboardPanel {
 
                 btn.rt_update = car_update.clone();
                 btn.set_text(&format!(
-                    "P{}({}) | #{} | {} | {} {} | {}",
-                    btn.rt_update.position,
-                    btn.rt_update.track_position,
+                    "#{} | {} | {} {} | {}",                    
                     btn.car_info.race_number,
                     btn.car_info.team_name,
                     current_driver.first_name,
