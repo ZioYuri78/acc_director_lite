@@ -34,16 +34,50 @@ impl RealtimeUpdatePanel {
         self.realtime_tb.set_text(&format!(
             "Ambient Temp: {}\r\n\
             Track Temp: {}\r\n\
+            ---\r\n\
             Time of day: {:?}\r\n\
             Phase: {:?}\r\n\
+            ---\r\n\
             Hud Page: {}\r\n\
-            Camera: {}",
+            Camera: {}\r\n\
+            ---\r\n\
+            Rain Level: {}\r\n\
+            Clouds: {}\r\n\
+            Wetness: {}\r\n\
+            ---\r\n\
+            Best Session Lap: {}\r\n\
+            Best lap car: {}\r\n\
+            Best lap driver: {}\r\n\
+            ---\r\n\
+            Session type: {:?}\r\n\
+            Session time: {:?}\r\n\
+            Session end time: {:?}\r\n\
+            Session remaining time: {:?}\r\n\
+            ({:?})\r\n\
+            ---\r\n\
+            Replay playing {}\r\n\
+            Replay sesison time: {}\r\n\
+            Replay remaining time: {}",
             realtime_data.ambient_temp,
             realtime_data.track_temp,
             realtime_data.time_of_day,
             realtime_data.phase,
             realtime_data.current_hud_page,
-            realtime_data.active_camera
+            realtime_data.active_camera,
+            realtime_data.rain_level,
+            realtime_data.clouds,
+            realtime_data.wetness,
+            realtime_data.best_session_lap,
+            realtime_data.bestlap_car_index,
+            realtime_data.bestlap_driver_index,
+            realtime_data.session_type,
+            realtime_data.session_time,
+            realtime_data.session_end_time,
+            realtime_data.session_remaining_time,
+            realtime_data.remaining_time,
+            realtime_data.is_replay_playing,
+            realtime_data.replay_session_time,
+            realtime_data.replay_remaining_time
         ));
     }
 }

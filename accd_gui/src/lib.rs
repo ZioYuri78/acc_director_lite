@@ -511,12 +511,27 @@ impl MainApp {
             .unwrap()
             .clone();
         let mut new_button = Default::default();
+        
         BroadcastEvtButton::builder()
             .parent(&self.broadcasting_events_panel.events_tab)
             .build(&mut new_button)
             .expect("Failed to build BroadcastEvtButton");
+
         new_button.broadcast_evt = event_data.event.clone();
-        new_button.set_text(&new_button.broadcast_evt.event_msg);
+
+        new_button.set_text(
+            &format!(
+                "Type: {:?}\r\n\
+                Msg: {}\r\n\
+                Time: {}\r\n\
+                Car id: {}\r\n\
+                Car data: {}\r\n",
+                &new_button.broadcast_evt.event_type,
+                &new_button.broadcast_evt.event_msg,
+                &new_button.broadcast_evt.event_time_ms,
+                &new_button.broadcast_evt.event_car_id,
+                &new_button.broadcast_evt.event_car_data
+            ));
 
         let row = buttons.len() as u32;
         self.broadcasting_events_panel
